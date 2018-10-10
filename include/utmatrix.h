@@ -62,66 +62,151 @@ public:
 template <class ValType>
 TVector<ValType>::TVector(int s, int si)
 {
+	if ((s < 0) || (s > MAX_VECTOR_SIZE) || (si < 0) || (si > s))
+		throw "ERROR";
+	else
+	{
+		Size = s;
+		StartIndex = si;
+		pVector = new ValType[Size];
+		for (int i = 0; i < Size; i++)
+			pVector[i] = 0;
+	}
 } /*-------------------------------------------------------------------------*/
 
 template <class ValType> //конструктор копирования
 TVector<ValType>::TVector(const TVector<ValType> &v)
 {
+	Size = v.Size;
+	pVector = new ValType[Size];
+	StartIndex = v.StartIndex;
+	for (int i = 0; i < Size; i++)
+		pVector[i] = v.pVector[i];
 } /*-------------------------------------------------------------------------*/
 
 template <class ValType>
 TVector<ValType>::~TVector()
 {
+	delete[] pVector;
 } /*-------------------------------------------------------------------------*/
 
 template <class ValType> // доступ
 ValType& TVector<ValType>::operator[](int pos)
 {
+	if ((pos < 0) || (pos > Size))
+		throw "ERROR";
+	else{
+		return pVector[pos - StartIndex];}
 } /*-------------------------------------------------------------------------*/
 
 template <class ValType> // сравнение
 bool TVector<ValType>::operator==(const TVector &v) const
 {
+	if (Size != v.Size)
+		return false;
+	if (StartIndex != v.StartIndex)
+		return false;
+	for (int i = 0; i < Size; i++)
+		if (pVector[i] != v.pVector[i])
+			return false;
+	return true;
+
 } /*-------------------------------------------------------------------------*/
 
 template <class ValType> // сравнение
 bool TVector<ValType>::operator!=(const TVector &v) const
 {
+	if (Size != v.Size)
+		return true;;
+	if (StartIndex != v.StartIndex)
+		return true;
+	for (int i = 0; i < Size; i++)
+		if (pVector[i] != v.pVector[i])
+			return true;
+	return false;
 } /*-------------------------------------------------------------------------*/
 
 template <class ValType> // присваивание
 TVector<ValType>& TVector<ValType>::operator=(const TVector &v)
 {
+	if (Size != v.Size) {
+		delete[] pVector;
+		pVector = new ValType[v.Size];
+	}
+	Size = v.Size;
+	StartIndex = v.StartIndex;
+	for (int i = 0; i < Size; i++)
+		pVector[i] = v.pVector[i];
+	return *this;
 } /*-------------------------------------------------------------------------*/
 
 template <class ValType> // прибавить скаляр
 TVector<ValType> TVector<ValType>::operator+(const ValType &val)
 {
+	TVector temp(Size, StartIndex);
+	for (int i = 0; i < Size; i++)
+		temp.pVector[i] = pVector[i] + val;
+	return temp;
 } /*-------------------------------------------------------------------------*/
 
 template <class ValType> // вычесть скаляр
 TVector<ValType> TVector<ValType>::operator-(const ValType &val)
 {
+	TVector temp(Size, StartIndex);
+	for (int i = 0; i < Size; i++)
+		temp.pVector[i] = pVector[i] - val;
+	return temp;
 } /*-------------------------------------------------------------------------*/
 
 template <class ValType> // умножить на скаляр
 TVector<ValType> TVector<ValType>::operator*(const ValType &val)
 {
+	TVector temp(Size, StartIndex);
+	for (int i = 0; i < Size; i++)
+		temp.pVector[i] = pVector[i] * val;
+	return temp;
 } /*-------------------------------------------------------------------------*/
 
 template <class ValType> // сложение
 TVector<ValType> TVector<ValType>::operator+(const TVector<ValType> &v)
 {
+	if (Size == v.Size)
+	{
+		TVector temp(Size, StartIndex);
+		for (int i = 0; i < Size; i++)
+			temp.pVector[i] = pVector[i] + v.pVector[i];
+		return temp;
+	}
+	else 
+		throw "ERROR";
 } /*-------------------------------------------------------------------------*/
 
 template <class ValType> // вычитание
 TVector<ValType> TVector<ValType>::operator-(const TVector<ValType> &v)
 {
+	if (Size == v.Size)
+	{
+		TVector temp(Size, StartIndex);
+		for (int i = 0; i < Size; i++)
+			temp.pVector[i] = pVector[i] - v.pVector[i];
+		return temp;
+	}
+	else
+		throw "ERROR";
 } /*-------------------------------------------------------------------------*/
 
 template <class ValType> // скалярное произведение
 ValType TVector<ValType>::operator*(const TVector<ValType> &v)
 {
+	if (Size == v.Size)
+	{
+		ValType res = 0;
+		for (int i = 0; i < Size; i++)
+			res = res +(pVector[i] * v.pVector[i]);
+		return res;
+	}
+	else
+		throw "ERROR";
 } /*-------------------------------------------------------------------------*/
 
 
@@ -157,19 +242,37 @@ public:
 template <class ValType>
 TMatrix<ValType>::TMatrix(int s): TVector<TVector<ValType> >(s)
 {
+	if ((s > 0) && (s < MAX_MATRIX_SIZE))
+	{
+		for (int i = 0; i < s; i++)
+			pVector[i] = TVector<ValType>(s - i, i);
+	}
+	else throw "ERROR";
+		
 } /*-------------------------------------------------------------------------*/
 
 template <class ValType> // конструктор копирования
 TMatrix<ValType>::TMatrix(const TMatrix<ValType> &mt):
-  TVector<TVector<ValType> >(mt) {}
+  TVector<TVector<ValType> >(mt) {
+	//pVector = new TVector<ValType>[mt];
+	Size = mt.Size;
+	StartIndex = mt.StartIndex;
+	for (int i = 0; i < Size; i++)
+	{
+		pVector = new TVector<ValType>[i];
+		pVector[i] = mt.pVector[i];
+	}
+}
 
 template <class ValType> // конструктор преобразования типа
 TMatrix<ValType>::TMatrix(const TVector<TVector<ValType> > &mt):
-  TVector<TVector<ValType> >(mt) {}
+  TVector<TVector<ValType> >(mt) {
+}
 
 template <class ValType> // сравнение
 bool TMatrix<ValType>::operator==(const TMatrix<ValType> &mt) const
 {
+
 } /*-------------------------------------------------------------------------*/
 
 template <class ValType> // сравнение
@@ -185,13 +288,12 @@ TMatrix<ValType>& TMatrix<ValType>::operator=(const TMatrix<ValType> &mt)
 template <class ValType> // сложение
 TMatrix<ValType> TMatrix<ValType>::operator+(const TMatrix<ValType> &mt)
 {
-} /*-------------------------------------------------------------------------*/
+} 
 
 template <class ValType> // вычитание
 TMatrix<ValType> TMatrix<ValType>::operator-(const TMatrix<ValType> &mt)
 {
 } /*-------------------------------------------------------------------------*/
-
 // TVector О3 Л2 П4 С6
 // TMatrix О2 Л2 П3 С3
 #endif
