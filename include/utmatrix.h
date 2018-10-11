@@ -64,17 +64,21 @@ TVector<ValType>::TVector(int s, int si)
 {
 	if (si < 0)
 	{
-		throw "ERROR";
+		throw "Wrong startIndex";
 	}
-	if ((s < 0) || (s > MAX_VECTOR_SIZE)) //|| (si < 0) || (si > s)
-		throw "ERROR";
-	else
+	if ((s > 0) && (s <= MAX_VECTOR_SIZE))
 	{
 		Size = s;
 		StartIndex = si;
 		pVector = new ValType[Size];
-		for (int i = 0; i < Size; i++)
-			pVector[i] = 0;
+		for (int i = 0; i < s; i++)
+		{
+			pVector[i] = {};
+		}
+	}
+	else
+	{
+		throw "Wrong length";
 	}
 } /*-------------------------------------------------------------------------*/
 
@@ -97,10 +101,21 @@ TVector<ValType>::~TVector()
 template <class ValType> // доступ
 ValType& TVector<ValType>::operator[](int pos)
 {
-	if ((pos < 0) || (pos > Size))
+	if ((pos >= 0) && (pos - StartIndex <= Size))
+	{
+		if (pos >= StartIndex)
+		{
+			return pVector[pos - StartIndex];
+		}
+		else
+		{
+			throw "ERROR";
+		}
+	}
+	else
+	{
 		throw "ERROR";
-	else{
-		return pVector[pos - StartIndex];}
+	}
 } /*-------------------------------------------------------------------------*/
 
 template <class ValType> // сравнение
