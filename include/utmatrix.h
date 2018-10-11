@@ -53,8 +53,15 @@ public:
   }
   friend ostream& operator<<(ostream &out, const TVector &v)
   {
-    for (int i = 0; i < v.Size; i++)
-      out << v.pVector[i] << ' ';
+	 for (int i = 0; i < v.StartIndex; i++)
+	  {
+		  out << "0" << " ";
+	  }
+	  for (int i = v.StartIndex; i < v.Size; i++)
+	  {
+		  out << v.pVector[i - v.StartIndex] << " ";
+	  }
+
     return out;
   }
 };
@@ -64,7 +71,7 @@ TVector<ValType>::TVector(int s, int si)
 {
 	if (si < 0)
 	{
-		throw "Wrong startIndex";
+		throw "ERROR";
 	}
 	if ((s > 0) && (s <= MAX_VECTOR_SIZE))
 	{
@@ -78,7 +85,7 @@ TVector<ValType>::TVector(int s, int si)
 	}
 	else
 	{
-		throw "Wrong length";
+		throw "ERROR";
 	}
 } /*-------------------------------------------------------------------------*/
 
@@ -101,7 +108,7 @@ TVector<ValType>::~TVector()
 template <class ValType> // доступ
 ValType& TVector<ValType>::operator[](int pos)
 {
-	if ((pos >= 0) && (pos - StartIndex <= Size))
+	if ((pos >= 0 ) && (pos - StartIndex <= Size))
 	{
 		if (pos >= StartIndex)
 		{
@@ -246,8 +253,10 @@ public:
   // ввод / вывод
   friend istream& operator>>(istream &in, TMatrix &mt)
   {
-    for (int i = 0; i < mt.Size; i++)
-      in >> mt.pVector[i];
+	  for (int i = 0; i < mt.Size; i++)
+	  {
+		  in >> mt.pVector[i];
+	  }
     return in;
   }
   friend ostream & operator<<( ostream &out, const TMatrix &mt)
@@ -267,7 +276,7 @@ TMatrix<ValType>::TMatrix(int s) : TVector<TVector<ValType> >(s)
 	{
 		for (int i = 0; i < s; i++)
 		{
-			pVector[i] = TVector<ValType>(s - i, i);
+			pVector[i] = TVector<ValType>(s, i);
 		}
 	}
 }/*-------------------------------------------------------------------------*/
