@@ -81,7 +81,6 @@ TEST(TVector, throws_when_set_element_with_too_large_index)
 TEST(TVector, can_assign_vector_to_itself)
 {
 	TVector<int> v(4);
-	//v = v;
 	ASSERT_TRUE(v == v);
 }
 
@@ -94,14 +93,19 @@ TEST(TVector, can_assign_vectors_of_equal_size)
 		v1[i] = i;
 	}
 	v = v1;
-
-	EXPECT_NE(0, v[0]);
-	EXPECT_NE(0, v[1]);
+	ASSERT_TRUE(v == v1);
 }
 
 TEST(TVector, assign_operator_change_vector_size)
 {
-  ADD_FAILURE();
+	const int size1 = 2, size2 = 5;
+	TVector<int> v1(size1), v2(size2);
+	for (int i = 0; i < size1; i++)
+	{
+		v1[i] = i;
+	}
+	v2 = v1;
+	ASSERT_TRUE(v1 == v2);
 }
 
 TEST(TVector, can_assign_vectors_of_different_size)
@@ -119,7 +123,14 @@ TEST(TVector, can_assign_vectors_of_different_size)
 
 TEST(TVector, compare_equal_vectors_return_true)
 {
-  ADD_FAILURE();
+	TVector<int> v1(4);
+	TVector<int> v2(4);
+	for (int i = 0; i < 4; i++)
+	{
+		v1[i] = 1;
+		v2[i] = 1;
+	}
+	ASSERT_TRUE(v1 == v2);
 }
 
 TEST(TVector, compare_vector_with_itself_return_true)
